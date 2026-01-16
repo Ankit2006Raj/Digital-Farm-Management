@@ -7,6 +7,10 @@ A comprehensive AI-powered farm management platform built with Flask that helps 
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Status](https://img.shields.io/badge/Status-Active-success.svg)
 
+<img width="1355" height="632" alt="image" src="https://github.com/user-attachments/assets/a4f89994-0382-4833-a6a6-6611769d249d" />
+<img width="1362" height="618" alt="image" src="https://github.com/user-attachments/assets/b2ad2eb3-08cc-43eb-a300-b76f5bf9fd66" />
+
+
 ## 📋 Table of Contents
 
 - [Features](#-features)
