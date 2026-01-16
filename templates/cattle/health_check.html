@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}AI Health Check{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-stethoscope me-2"></i>
+                    AI-Powered Health Check
+                </h4>
+                <p class="mb-0 mt-2">Upload a photo and describe symptoms for instant AI diagnosis</p>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" id="healthCheckForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <label for="cattle_image" class="form-label">Upload Cattle Image</label>
+                                <div class="upload-area" onclick="document.getElementById('cattle_image').click()">
+                                    <input type="file" id="cattle_image" name="cattle_image" accept="image/*" style="display: none;">
+                                    <div class="upload-text">
+                                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                        <h5>Click or drag to upload image</h5>
+                                        <p class="text-muted">Supported formats: JPG, PNG, GIF</p>
+                                    </div>
+                                    <div class="preview"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="cattle_id" class="form-label">Select Cattle (Optional)</label>
+                                <select class="form-control" id="cattle_id" name="cattle_id">
+                                    <option value="">General Health Check</option>
+                                    {% for cattle in cattle_list %}
+                                    <option value="{{ cattle.id }}">{{ cattle.tag_number }} - {{ cattle.breed }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="symptoms" class="form-label">Observed Symptoms</label>
+                                <textarea class="form-control" id="symptoms" name="symptoms" rows="5" 
+                                         placeholder="Describe any symptoms you've noticed (e.g., fever, coughing, loss of appetite, limping...)"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Quick Symptom Selection</label>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="fever" name="quick_symptoms" value="fever">
+                                            <label class="form-check-label" for="fever">Fever</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="coughing" name="quick_symptoms" value="coughing">
+                                            <label class="form-check-label" for="coughing">Coughing</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="limping" name="quick_symptoms" value="limping">
+                                            <label class="form-check-label" for="limping">Limping</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="diarrhea" name="quick_symptoms" value="diarrhea">
+                                            <label class="form-check-label" for="diarrhea">Diarrhea</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="loss_appetite" name="quick_symptoms" value="loss of appetite">
+                                            <label class="form-check-label" for="loss_appetite">Loss of Appetite</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="nasal_discharge" name="quick_symptoms" value="nasal discharge">
+                                            <label class="form-check-label" for="nasal_discharge">Nasal Discharge</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="swollen_udder" name="quick_symptoms" value="swollen udder">
+                                            <label class="form-check-label" for="swollen_udder">Swollen Udder</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="abnormal_behavior" name="quick_symptoms" value="abnormal behavior">
+                                            <label class="form-check-label" for="abnormal_behavior">Abnormal Behavior</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>AI Analysis Features:</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li>Image-based symptom detection using computer vision</li>
+                                    <li>Disease pattern matching against veterinary database</li>
+                                    <li>Risk assessment and severity scoring</li>
+                                    <li>Treatment recommendations and next steps</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ url_for('cattle.index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Cattle List
+                        </a>
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="fas fa-brain"></i> Start AI Analysis
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Recent Health Checks -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Health Checks</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-left-success">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <i class="fas fa-check-circle fa-2x text-success"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">C001 - Holstein</h6>
+                                        <p class="mb-0 text-muted">Healthy - 2 hours ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-left-warning">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">C002 - Jersey</h6>
+                                        <p class="mb-0 text-muted">Monitoring Required - 1 day ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-left-danger">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <i class="fas fa-times-circle fa-2x text-danger"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">C003 - Gir</h6>
+                                        <p class="mb-0 text-muted">Requires Attention - 3 days ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.border-left-success {
+    border-left: 4px solid #28a745 !important;
+}
+.border-left-warning {
+    border-left: 4px solid #ffc107 !important;
+}
+.border-left-danger {
+    border-left: 4px solid #dc3545 !important;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    const symptomsTextarea = document.getElementById('symptoms');
+    
+    // Update symptoms textarea when checkboxes are selected
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            updateSymptomsText();
+        });
+    });
+    
+    function updateSymptomsText() {
+        const selectedSymptoms = Array.from(checkboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+        
+        const existingSymptoms = symptomsTextarea.value.trim();
+        let combinedSymptoms = selectedSymptoms.join(', ');
+        
+        if (existingSymptoms && combinedSymptoms) {
+            combinedSymptoms = existingSymptoms + ', ' + combinedSymptoms;
+        } else if (existingSymptoms) {
+            combinedSymptoms = existingSymptoms;
+        }
+        
+        symptomsTextarea.value = combinedSymptoms;
+    }
+    
+    // Form validation
+    document.getElementById('healthCheckForm').addEventListener('submit', function(e) {
+        const imageFile = document.getElementById('cattle_image').files[0];
+        const symptoms = document.getElementById('symptoms').value.trim();
+        
+        if (!imageFile && !symptoms) {
+            e.preventDefault();
+            alert('Please upload an image or describe symptoms for analysis.');
+            return;
+        }
+        
+        if (!symptoms) {
+            if (!confirm('No symptoms described. The AI will only analyze the uploaded image. Continue?')) {
+                e.preventDefault();
+                return;
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Activity Log{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">AI Activity Log</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-12 col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent AI Activities</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Date & Time</th>
+                                    <th>Activity Type</th>
+                                    <th>Entity</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2023-09-07 08:15:22</td>
+                                    <td>Health Analysis</td>
+                                    <td>Cattle</td>
+                                    <td>Performed health analysis on cattle herd</td>
+                                    <td><span class="badge badge-success">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2023-09-06 14:30:45</td>
+                                    <td>Production Forecast</td>
+                                    <td>Fish</td>
+                                    <td>Generated production forecast for fish ponds</td>
+                                    <td><span class="badge badge-success">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2023-09-06 10:12:33</td>
+                                    <td>Market Analysis</td>
+                                    <td>Poultry</td>
+                                    <td>Analyzed market trends for poultry products</td>
+                                    <td><span class="badge badge-success">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2023-09-05 16:45:12</td>
+                                    <td>Schedule Optimization</td>
+                                    <td>Farm</td>
+                                    <td>Optimized farm activity schedule</td>
+                                    <td><span class="badge badge-success">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2023-09-05 09:22:18</td>
+                                    <td>Feed Recommendation</td>
+                                    <td>Cattle</td>
+                                    <td>Generated feed recommendations for cattle</td>
+                                    <td><span class="badge badge-success">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2023-09-04 13:10:05</td>
+                                    <td>Disease Risk Assessment</td>
+                                    <td>Poultry</td>
+                                    <td>Assessed disease risks for poultry coops</td>
+                                    <td><span class="badge badge-warning">Needs Review</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button class="btn btn-primary">Refresh Log</button>
+                        <button class="btn btn-info ml-2">Export Log</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

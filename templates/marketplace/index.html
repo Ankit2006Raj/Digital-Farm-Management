@@ -1,0 +1,471 @@
+{% extends "base.html" %}
+
+{% block title %}Marketplace{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-success">
+            <i class="fas fa-store me-2"></i>
+            AI-Powered Farm Marketplace
+        </h2>
+        <p class="text-muted">Connect with local buyers and optimize your sales with AI price predictions</p>
+    </div>
+    <div>
+        <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#listProductModal">
+            <i class="fas fa-plus"></i> List Product
+        </button>
+        <button class="btn btn-outline-primary" onclick="getAIPricePredict()">
+            <i class="fas fa-brain"></i> AI Price Prediction
+        </button>
+    </div>
+</div>
+
+<!-- Market Overview -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-line fa-2x text-success mb-3"></i>
+                <h4 class="fw-bold">₹1,24,500</h4>
+                <p class="text-muted mb-0">Monthly Earnings</p>
+                <small class="text-success">+15% from last month</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <i class="fas fa-handshake fa-2x text-info mb-3"></i>
+                <h4 class="fw-bold">23</h4>
+                <p class="text-muted mb-0">Active Buyers</p>
+                <small class="text-info">5 new this week</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <i class="fas fa-boxes fa-2x text-warning mb-3"></i>
+                <h4 class="fw-bold">8</h4>
+                <p class="text-muted mb-0">Listed Products</p>
+                <small class="text-warning">2 pending approval</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <i class="fas fa-star fa-2x text-primary mb-3"></i>
+                <h4 class="fw-bold">4.8</h4>
+                <p class="text-muted mb-0">Seller Rating</p>
+                <small class="text-primary">Based on 45 reviews</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Marketplace Content -->
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Your Listings -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Your Active Listings
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="product-card">
+                            <div class="row g-0">
+                                <div class="col-4">
+                                    <div class="product-image">
+                                        <i class="fas fa-tint fa-3x text-primary"></i>
+                                    </div>
+                                </div>
+                                <div class="col-8">
+                                    <div class="card-body">
+                                        <h6 class="card-title">Fresh Cow Milk</h6>
+                                        <p class="text-muted small mb-1">25L daily available</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="price text-success fw-bold">₹52/L</span>
+                                            <span class="badge bg-success">Active</span>
+                                        </div>
+                                        <div class="mt-2">
+                                            <button class="btn btn-sm btn-outline-primary me-1">Edit</button>
+                                            <button class="btn btn-sm btn-outline-danger">Remove</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="product-card">
+                            <div class="row g-0">
+                                <div class="col-4">
+                                    <div class="product-image">
+                                        <i class="fas fa-egg fa-3x text-warning"></i>
+                                    </div>
+                                </div>
+                                <div class="col-8">
+                                    <div class="card-body">
+                                        <h6 class="card-title">Farm Fresh Eggs</h6>
+                                        <p class="text-muted small mb-1">180 eggs daily</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="price text-success fw-bold">₹6/piece</span>
+                                            <span class="badge bg-success">Active</span>
+                                        </div>
+                                        <div class="mt-2">
+                                            <button class="btn btn-sm btn-outline-primary me-1">Edit</button>
+                                            <button class="btn btn-sm btn-outline-danger">Remove</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Orders -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-shopping-cart me-2"></i>
+                    Recent Orders
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Product</th>
+                                <th>Buyer</th>
+                                <th>Quantity</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>#MP001</strong></td>
+                                <td>Cow Milk</td>
+                                <td>Rahul Dairy</td>
+                                <td>50L</td>
+                                <td>₹2,600</td>
+                                <td><span class="badge bg-success">Delivered</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>#MP002</strong></td>
+                                <td>Fresh Eggs</td>
+                                <td>Local Hotel</td>
+                                <td>300 pcs</td>
+                                <td>₹1,800</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-success">Process</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- AI Price Predictions -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>
+                    AI Price Predictions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="prediction-item mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">Milk Prices</h6>
+                            <small class="text-muted">Next 7 days</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="fw-bold text-success">₹54/L</span>
+                            <div><small class="text-success">+4% ↗</small></div>
+                        </div>
+                    </div>
+                    <div class="progress mt-2" style="height: 4px;">
+                        <div class="progress-bar bg-success" style="width: 85%"></div>
+                    </div>
+                </div>
+                
+                <div class="prediction-item mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">Egg Prices</h6>
+                            <small class="text-muted">Next 7 days</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="fw-bold text-warning">₹5.8/piece</span>
+                            <div><small class="text-danger">-3% ↘</small></div>
+                        </div>
+                    </div>
+                    <div class="progress mt-2" style="height: 4px;">
+                        <div class="progress-bar bg-warning" style="width: 65%"></div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <small><strong>AI Insight:</strong> Milk demand expected to rise during festival season. Consider increasing production.</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Nearby Buyers -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-map-marker-alt me-2"></i>
+                    Nearby Buyers
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="buyer-item mb-3">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-store fa-2x text-primary me-3"></i>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">Sharma Dairy</h6>
+                            <small class="text-muted">2.5 km away • Milk buyer</small>
+                            <div class="mt-1">
+                                <span class="badge bg-success">₹55/L</span>
+                                <small class="text-muted ms-2">Regular orders</small>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary">Contact</button>
+                    </div>
+                </div>
+                
+                <div class="buyer-item mb-3">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-utensils fa-2x text-warning me-3"></i>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">Grand Hotel</h6>
+                            <small class="text-muted">4.2 km away • Eggs & Milk</small>
+                            <div class="mt-1">
+                                <span class="badge bg-info">₹6.5/egg</span>
+                                <small class="text-muted ms-2">Bulk orders</small>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-outline-warning">Contact</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Market Tips -->
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    Smart Market Tips
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="tip-item mb-2">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    <small>List organic milk at 20% premium price</small>
+                </div>
+                <div class="tip-item mb-2">
+                    <i class="fas fa-clock text-warning me-2"></i>
+                    <small>Best selling time: 6-8 AM for milk</small>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-star text-info me-2"></i>
+                    <small>Maintain 5-star rating for better visibility</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- List Product Modal -->
+<div class="modal fade" id="listProductModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">List New Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Product Type</label>
+                            <select class="form-control" id="productType">
+                                <option value="milk">Milk</option>
+                                <option value="eggs">Eggs</option>
+                                <option value="fish">Fresh Fish</option>
+                                <option value="meat">Meat</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Product Name</label>
+                            <input type="text" class="form-control" placeholder="e.g., Fresh Cow Milk">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Price per Unit</label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                <input type="number" class="form-control" placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Available Quantity</label>
+                            <input type="number" class="form-control" placeholder="Daily available quantity">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Product Description</label>
+                        <textarea class="form-control" rows="3" placeholder="Describe your product quality, freshness, etc."></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Product Images</label>
+                        <input type="file" class="form-control" multiple accept="image/*">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Delivery Options</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="farmPickup">
+                                <label class="form-check-label" for="farmPickup">Farm Pickup</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="homeDelivery">
+                                <label class="form-check-label" for="homeDelivery">Home Delivery</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Payment Options</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="cashPayment" checked>
+                                <label class="form-check-label" for="cashPayment">Cash</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="onlinePayment">
+                                <label class="form-check-label" for="onlinePayment">Online Payment</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="listProduct()">List Product</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.product-card {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background: white;
+    transition: transform 0.2s;
+}
+
+.product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.product-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    background: #f8f9fa;
+    border-radius: 8px 0 0 8px;
+}
+
+.prediction-item {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    background: #f8f9fa;
+}
+
+.buyer-item {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    background: #f8f9fa;
+}
+
+.price {
+    font-size: 1.2rem;
+}
+
+.tip-item {
+    display: flex;
+    align-items: center;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function getAIPricePredict() {
+    FarmManagement.showToast('AI is analyzing market trends and predicting optimal prices...', 'info');
+    
+    setTimeout(() => {
+        FarmManagement.showToast('Price predictions updated! Check the sidebar for insights.', 'success');
+    }, 2000);
+}
+
+function listProduct() {
+    // Validate form
+    const productType = document.getElementById('productType').value;
+    
+    FarmManagement.showToast(`${productType} product listed successfully! It will be visible to buyers within 24 hours.`, 'success');
+    
+    // Close modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('listProductModal'));
+    modal.hide();
+}
+
+// Simulate real-time price updates
+setInterval(() => {
+    const priceElements = document.querySelectorAll('.prediction-item .fw-bold');
+    priceElements.forEach(element => {
+        const currentPrice = parseFloat(element.textContent.replace('₹', '').replace('/L', '').replace('/piece', ''));
+        const variation = (Math.random() - 0.5) * 0.5; // ±0.25
+        const newPrice = (currentPrice + variation).toFixed(1);
+        const unit = element.textContent.includes('/L') ? '/L' : '/piece';
+        element.textContent = `₹${newPrice}${unit}`;
+    });
+}, 10000); // Update every 10 seconds
+</script>
+{% endblock %}

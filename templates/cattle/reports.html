@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Cattle Reports{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary">
+                <i class="fas fa-chart-bar me-2"></i>
+                Cattle Reports
+            </h2>
+            <p class="text-muted">Comprehensive reports and analytics for your cattle management</p>
+        </div>
+        <div>
+            <a href="{{ url_for('cattle.index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Cattle Management
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-2">Total Cattle</h6>
+                    <h3 class="mb-0">{{ total_cattle }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-2">Active Cattle</h6>
+                    <h3 class="mb-0">{{ active_cattle }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-2">Average Weight</h6>
+                    <h3 class="mb-0">{{ avg_weight|round|int }} kg</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-2">Average Age</h6>
+                    <h3 class="mb-0">{{ avg_age|round(1) }} years</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Milk Production Chart -->
+        <div class="col-md-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Monthly Milk Production</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="milkProductionChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Breed Distribution -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Breed Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="breedDistributionChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Health Records -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Recent Health Records</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Cattle</th>
+                                    <th>Diagnosis</th>
+                                    <th>Treatment</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in health_records %}
+                                <tr>
+                                    <td>{{ record.record_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ record.animal_id }}</td>
+                                    <td>{{ record.diagnosis or 'Routine Check' }}</td>
+                                    <td>{{ record.treatment or 'N/A' }}</td>
+                                    <td>
+                                        {% if record.status == 'resolved' %}
+                                        <span class="badge bg-success">Resolved</span>
+                                        {% elif record.status == 'ongoing' %}
+                                        <span class="badge bg-warning">Ongoing</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ record.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-3">No health records found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Options -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Export Reports</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="d-grid">
+                                <button class="btn btn-outline-primary">
+                                    <i class="fas fa-file-pdf me-2"></i> Export as PDF
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-grid">
+                                <button class="btn btn-outline-success">
+                                    <i class="fas fa-file-excel me-2"></i> Export as Excel
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-grid">
+                                <button class="btn btn-outline-info">
+                                    <i class="fas fa-print me-2"></i> Print Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Scripts -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Milk Production Chart
+        var milkCtx = document.getElementById('milkProductionChart').getContext('2d');
+        var milkChart = new Chart(milkCtx, {
+            type: 'line',
+            data: {
+                labels: {{ months|tojson }},
+                datasets: [{
+                    label: 'Milk Production (Liters)',
+                    data: {{ milk_production|tojson }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Breed Distribution Chart
+        var breedCtx = document.getElementById('breedDistributionChart').getContext('2d');
+        var breedData = {
+            labels: {{ breed_distribution.keys()|list|tojson }},
+            datasets: [{
+                data: {{ breed_distribution.values()|list|tojson }},
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(255, 206, 86, 0.7)',
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(153, 102, 255, 0.7)'
+                ],
+                borderWidth: 1
+            }]
+        };
+        var breedChart = new Chart(breedCtx, {
+            type: 'pie',
+            data: breedData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

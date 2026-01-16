@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block title %}Health Check Results{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h4 class="mb-0">AI Health Analysis Results</h4>
+                    <p class="text-sm text-muted">AI-powered disease detection and diagnosis</p>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Image and Basic Info -->
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header p-3 pb-0">
+                                    <h6 class="mb-0">Analyzed Image</h6>
+                                </div>
+                                <div class="card-body p-3 pt-1">
+                                    <img src="/{{ image_path }}" class="img-fluid rounded" alt="Cattle Image">
+                                    {% if cattle %}
+                                    <div class="mt-3">
+                                        <h6>Cattle Information</h6>
+                                        <p class="mb-1"><strong>ID:</strong> {{ cattle.id }}</p>
+                                        <p class="mb-1"><strong>Tag Number:</strong> {{ cattle.tag_number }}</p>
+                                        <p class="mb-1"><strong>Breed:</strong> {{ cattle.breed }}</p>
+                                        <p class="mb-1"><strong>Age:</strong> {{ cattle.age }} years</p>
+                                        <p class="mb-0"><strong>Weight:</strong> {{ cattle.weight }} kg</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Primary Diagnosis -->
+                        <div class="col-md-8">
+                            <div class="card mb-3">
+                                <div class="card-header p-3 pb-0">
+                                    <div class="d-flex justify-content-between">
+                                        <h6 class="mb-0">Primary Diagnosis</h6>
+                                        <span class="badge bg-{{ 'danger' if result.diagnosis.severity == 'high' else 'warning' if result.diagnosis.severity == 'medium' else 'success' }}">
+                                            {{ result.diagnosis.severity|capitalize }} Severity
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-body p-3 pt-2">
+                                    <h4 class="mb-1">{{ result.diagnosis.name }}</h4>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="progress-wrapper w-75">
+                                            <div class="progress-info">
+                                                <div class="progress-percentage">
+                                                    <span class="text-sm font-weight-bold">Confidence: {{ "%.1f"|format(result.diagnosis.confidence) }}%</span>
+                                                </div>
+                                            </div>
+                                            <div class="progress">
+                                                <div class="progress-bar bg-primary" role="progressbar" aria-valuenow="{{ result.diagnosis.confidence }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ result.diagnosis.confidence }}%;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6 class="text-sm">Treatment</h6>
+                                            <p class="text-sm">{{ result.diagnosis.treatment }}</p>
+                                            
+                                            <h6 class="text-sm">Prevention</h6>
+                                            <p class="text-sm">{{ result.diagnosis.prevention }}</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6 class="text-sm">Contagious</h6>
+                                            <p class="text-sm">
+                                                {% if result.diagnosis.contagious %}
+                                                <span class="badge bg-danger">Yes - Isolate Animal</span>
+                                                {% else %}
+                                                <span class="badge bg-success">No</span>
+                                                {% endif %}
+                                            </p>
+                                            
+                                            <h6 class="text-sm">Recovery Time</h6>
+                                            <p class="text-sm">{{ result.diagnosis.recovery_time }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Detected Symptoms -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-header p-3 pb-0">
+                                            <h6 class="mb-0">Detected Symptoms</h6>
+                                        </div>
+                                        <div class="card-body p-3 pt-2">
+                                            <div class="mb-2">
+                                                <h6 class="text-xs text-uppercase">From Text Description</h6>
+                                                {% if result.detected_symptoms.from_text %}
+                                                <ul class="list-unstyled mb-0">
+                                                    {% for symptom in result.detected_symptoms.from_text %}
+                                                    <li><span class="badge bg-light text-dark">{{ symptom }}</span></li>
+                                                    {% endfor %}
+                                                </ul>
+                                                {% else %}
+                                                <p class="text-sm text-muted">No symptoms detected from text</p>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            <div>
+                                                <h6 class="text-xs text-uppercase">From Image Analysis</h6>
+                                                {% if result.detected_symptoms.from_image %}
+                                                <ul class="list-unstyled mb-0">
+                                                    {% for symptom in result.detected_symptoms.from_image %}
+                                                    <li><span class="badge bg-info text-white">{{ symptom }}</span></li>
+                                                    {% endfor %}
+                                                </ul>
+                                                {% else %}
+                                                <p class="text-sm text-muted">No symptoms detected from image</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Recommendations -->
+                                <div class="col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-header p-3 pb-0">
+                                            <h6 class="mb-0">Recommendations</h6>
+                                        </div>
+                                        <div class="card-body p-3 pt-2">
+                                            <ul class="list-group">
+                                                {% for recommendation in result.recommendations %}
+                                                <li class="list-group-item border-0 ps-0 pt-0 text-sm">{{ recommendation }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Information -->
+                    <div class="row mt-4">
+                        <!-- Differential Diagnosis -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header p-3 pb-0">
+                                    <h6 class="mb-0">Differential Diagnosis</h6>
+                                    <p class="text-xs text-muted">Other possible conditions</p>
+                                </div>
+                                <div class="card-body p-3 pt-2">
+                                    {% if result.differential_diagnosis %}
+                                    <div class="table-responsive">
+                                        <table class="table align-items-center mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-uppercase text-xxs font-weight-bolder opacity-7">Disease</th>
+                                                    <th class="text-uppercase text-xxs font-weight-bolder opacity-7 ps-2">Confidence</th>
+                                                    <th class="text-uppercase text-xxs font-weight-bolder opacity-7 ps-2">Key Symptoms</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for diagnosis in result.differential_diagnosis %}
+                                                <tr>
+                                                    <td>
+                                                        <p class="text-xs font-weight-bold mb-0">{{ diagnosis.name }}</p>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <span class="me-2 text-xs font-weight-bold">{{ "%.1f"|format(diagnosis.confidence) }}%</span>
+                                                            <div>
+                                                                <div class="progress">
+                                                                    <div class="progress-bar bg-gradient-info" role="progressbar" aria-valuenow="{{ diagnosis.confidence }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ diagnosis.confidence }}%;"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-xs text-secondary mb-0">{{ diagnosis.key_symptoms|join(", ") }}</p>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% else %}
+                                    <p class="text-sm text-muted">No alternative diagnoses identified</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- AI Notes -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header p-3 pb-0">
+                                    <h6 class="mb-0">AI Notes</h6>
+                                    <p class="text-xs text-muted">Additional insights from AI analysis</p>
+                                </div>
+                                <div class="card-body p-3 pt-2">
+                                    <p class="text-sm">{{ result.ai_notes }}</p>
+                                    
+                                    <div class="alert alert-secondary text-white mt-3" role="alert">
+                                        <strong>Disclaimer:</strong> This AI analysis is for informational purposes only and should not replace professional veterinary advice. Always consult with a qualified veterinarian for proper diagnosis and treatment.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="row mt-4">
+                        <div class="col-12 text-center">
+                            <a href="{{ url_for('cattle_bp.health_check') }}" class="btn btn-outline-primary me-2">New Health Check</a>
+                            {% if cattle %}
+                            <a href="{{ url_for('cattle_bp.view_cattle', cattle_id=cattle.id) }}" class="btn btn-primary">Back to Cattle Profile</a>
+                            {% else %}
+                            <a href="{{ url_for('cattle_bp.index') }}" class="btn btn-primary">Back to Cattle Dashboard</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

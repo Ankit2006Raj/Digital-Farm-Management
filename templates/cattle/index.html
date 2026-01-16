@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+
+{% block title %}Cattle & Buffalo Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-success">
+            <i class="fas fa-cow me-2"></i>
+            Cattle & Buffalo Management
+        </h2>
+        <p class="text-muted">Manage your cattle herd with AI-powered insights</p>
+    </div>
+    <div>
+        <a href="{{ url_for('cattle.add_cattle') }}" class="btn btn-success me-2">
+            <i class="fas fa-plus"></i> Add Cattle
+        </a>
+        <a href="{{ url_for('cattle.health_check') }}" class="btn btn-outline-danger">
+            <i class="fas fa-stethoscope"></i> Health Check
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <i class="fas fa-cow fa-2x text-success mb-3"></i>
+                <h4 class="fw-bold">{{ total_cattle }}</h4>
+                <p class="text-muted mb-0">Total Cattle</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <i class="fas fa-heart fa-2x text-info mb-3"></i>
+                <h4 class="fw-bold">{{ healthy_cattle }}</h4>
+                <p class="text-muted mb-0">Healthy Animals</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <i class="fas fa-tint fa-2x text-primary mb-3"></i>
+                <h4 class="fw-bold">{{ "%.1f"|format(total_milk_production) }}L</h4>
+                <p class="text-muted mb-0">Daily Milk Production</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-line fa-2x text-warning mb-3"></i>
+                <h4 class="fw-bold">{{ "%.1f"|format(avg_milk_production) }}L</h4>
+                <p class="text-muted mb-0">Average per Animal</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-md-2 mb-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <a href="{{ url_for('cattle.health_check') }}" class="text-decoration-none">
+                    <i class="fas fa-stethoscope fa-2x text-danger mb-2"></i>
+                    <p class="fw-bold mb-0">Health Check</p>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <a href="{{ url_for('cattle.nutrition_recommendation') }}" class="text-decoration-none">
+                    <i class="fas fa-leaf fa-2x text-success mb-2"></i>
+                    <p class="fw-bold mb-0">Nutrition Guide</p>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <a href="{{ url_for('cattle.anomaly_detection') }}" class="text-decoration-none">
+                    <i class="fas fa-search fa-2x text-warning mb-2"></i>
+                    <p class="fw-bold mb-0">Anomaly Detection</p>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <a href="{{ url_for('cattle.lifecycle_tracker_dashboard') }}" class="text-decoration-none">
+                    <i class="fas fa-chart-line fa-2x text-info mb-2"></i>
+                    <p class="fw-bold mb-0">Lifecycle Tracker</p>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <a href="{{ url_for('cattle.cattle_reports') }}" class="text-decoration-none">
+                    <i class="fas fa-chart-bar fa-2x text-primary mb-2"></i>
+                    <p class="fw-bold mb-0">Reports</p>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <a href="{{ url_for('cattle.cattle_schedule') }}" class="text-decoration-none">
+                    <i class="fas fa-calendar fa-2x text-secondary mb-2"></i>
+                    <p class="fw-bold mb-0">Schedule</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cattle List -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Cattle Inventory</h5>
+                    <div class="input-group" style="width: 300px;">
+                        <input type="text" class="form-control" placeholder="Search cattle..." id="searchInput">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Tag Number</th>
+                                <th>Breed</th>
+                                <th>Age</th>
+                                <th>Weight</th>
+                                <th>Health Status</th>
+                                <th>Milk Yield (L/day)</th>
+                                <th>Last Checkup</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cattle in cattle_list %}
+                            <tr>
+                                <td>
+                                    <strong>{{ cattle.tag_number }}</strong>
+                                </td>
+                                <td>{{ cattle.breed }}</td>
+                                <td>{{ cattle.age }} years</td>
+                                <td>{{ cattle.weight }} kg</td>
+                                <td>
+                                    <span class="status-badge {% if cattle.health_status == 'Healthy' %}status-healthy{% elif cattle.health_status == 'Sick' %}status-sick{% else %}status-monitoring{% endif %}">
+                                        {{ cattle.health_status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if cattle.milk_yield_daily %}
+                                        {{ "%.1f"|format(cattle.milk_yield_daily) }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if cattle.last_checkup %}
+                                        {{ cattle.last_checkup.strftime('%Y-%m-%d') }}
+                                    {% else %}
+                                        Never
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('cattle.view_cattle', cattle_id=cattle.id) }}" 
+                                           class="btn btn-outline-primary" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ url_for('cattle.lifecycle_tracker_dashboard') }}" 
+                                           class="btn btn-outline-info" title="Lifecycle">
+                                            <i class="fas fa-chart-line"></i>
+                                        </a>
+                                        <a href="{{ url_for('cattle.genetic_traits', cattle_id=cattle.id) }}" 
+                                           class="btn btn-outline-success" title="Genetic Traits">
+                                            <i class="fas fa-dna"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center py-4">
+                                    <i class="fas fa-cow fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">No cattle registered yet. <a href="{{ url_for('cattle.add_cattle') }}">Add your first cattle</a></p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Health Records -->
+{% if recent_health_records %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Recent Health Records</h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    {% for record in recent_health_records %}
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-primary"></div>
+                        <div class="timeline-content">
+                            <h6 class="mb-1">{{ record.diagnosis or 'Health Check' }}</h6>
+                            <p class="mb-1">{{ record.symptoms }}</p>
+                            <small class="text-muted">{{ record.record_date.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                            {% if record.veterinarian %}
+                                <br><small class="text-muted">By: {{ record.veterinarian }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -23px;
+    top: 5px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 3px solid white;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid #dee2e6;
+}
+</style>
+
+<script>
+// Search functionality
+document.getElementById('searchInput').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const tableRows = document.querySelectorAll('tbody tr');
+    
+    tableRows.forEach(row => {
+        const tagNumber = row.cells[0]?.textContent.toLowerCase() || '';
+        const breed = row.cells[1]?.textContent.toLowerCase() || '';
+        const healthStatus = row.cells[4]?.textContent.toLowerCase() || '';
+        
+        if (tagNumber.includes(searchTerm) || breed.includes(searchTerm) || healthStatus.includes(searchTerm)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+</script>
+{% endblock %}

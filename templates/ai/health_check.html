@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Health Check{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">AI Health Check</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-12 col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Health Analysis</h6>
+                </div>
+                <div class="card-body">
+                    <p>The AI health check analyzes your livestock health data to identify patterns and provide recommendations.</p>
+                    
+                    <div class="alert alert-success">
+                        <h5>Health Status: Good</h5>
+                        <p>Overall health indicators are positive across all livestock categories.</p>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">Cattle Health</div>
+                                <div class="card-body text-center">
+                                    <h1>92%</h1>
+                                    <p>Health score</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">Fish Health</div>
+                                <div class="card-body text-center">
+                                    <h1>88%</h1>
+                                    <p>Health score</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">Poultry Health</div>
+                                <div class="card-body text-center">
+                                    <h1>95%</h1>
+                                    <p>Health score</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button class="btn btn-primary">Run New Health Analysis</button>
+                        <button class="btn btn-info ml-2">View Detailed Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

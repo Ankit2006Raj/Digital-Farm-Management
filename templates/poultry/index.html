@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Poultry Farm Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-warning">
+            <i class="fas fa-feather me-2"></i>
+            Poultry Farm Management
+        </h2>
+        <p class="text-muted">Monitor egg production and poultry health</p>
+    </div>
+    <div>
+        <a href="{{ url_for('poultry.add_coop') }}" class="btn btn-warning me-2">
+            <i class="fas fa-plus"></i> Add Coop
+        </a>
+        <a href="{{ url_for('poultry.egg_freshness') }}" class="btn btn-outline-info">
+            <i class="fas fa-egg"></i> Egg Quality
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <i class="fas fa-home fa-2x text-warning mb-3"></i>
+                <h4 class="fw-bold">{{ total_coops }}</h4>
+                <p class="text-muted mb-0">Active Coops</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <i class="fas fa-feather fa-2x text-primary mb-3"></i>
+                <h4 class="fw-bold">{{ total_birds }}</h4>
+                <p class="text-muted mb-0">Total Birds</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <i class="fas fa-egg fa-2x text-success mb-3"></i>
+                <h4 class="fw-bold">{{ total_egg_production }}</h4>
+                <p class="text-muted mb-0">Daily Eggs</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-line fa-2x text-info mb-3"></i>
+                <h4 class="fw-bold">94%</h4>
+                <p class="text-muted mb-0">Production Rate</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Poultry Coops</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Coop ID</th>
+                        <th>Breed</th>
+                        <th>Bird Count</th>
+                        <th>Daily Eggs</th>
+                        <th>Feed Consumption</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for coop in poultry_coops %}
+                    <tr>
+                        <td><strong>{{ coop.coop_id }}</strong></td>
+                        <td>{{ coop.breed }}</td>
+                        <td>{{ coop.count }}</td>
+                        <td>{{ coop.egg_production_daily }}</td>
+                        <td>{{ coop.feed_consumption }} kg</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="#" class="btn btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-success">
+                                    <i class="fas fa-chart-line"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            <i class="fas fa-feather fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No poultry coops registered yet.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

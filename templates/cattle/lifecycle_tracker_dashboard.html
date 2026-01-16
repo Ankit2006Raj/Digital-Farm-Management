@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block title %}Cattle Lifecycle Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-success">
+                <i class="fas fa-chart-line me-2"></i>
+                Cattle Lifecycle Tracker
+            </h2>
+            <p class="text-muted">Track and predict lifecycle milestones for your cattle</p>
+        </div>
+        <div>
+            <a href="{{ url_for('cattle.index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Cattle Management
+            </a>
+        </div>
+    </div>
+
+    <!-- Cattle Selection Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('cattle.lifecycle_tracker_dashboard') }}">
+                <div class="row align-items-end">
+                    <div class="col-md-6">
+                        <label for="cattle_id" class="form-label">Select Cattle</label>
+                        <select class="form-select" id="cattle_id" name="cattle_id" required>
+                            <option value="" selected disabled>Choose cattle...</option>
+                            {% for cattle in cattle_list %}
+                            <option value="{{ cattle.id }}" {% if selected_cattle and selected_cattle.id == cattle.id %}selected{% endif %}>
+                                {{ cattle.tag_number }} - {{ cattle.breed }} ({{ cattle.age }} years)
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search"></i> View Lifecycle
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if selected_cattle %}
+    <div class="row">
+        <!-- Cattle Info Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Cattle Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-light rounded-circle p-3 me-3">
+                            <i class="fas fa-cow fa-2x text-primary"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0">{{ selected_cattle.tag_number }}</h5>
+                            <p class="text-muted mb-0">{{ selected_cattle.breed }}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><strong>Age:</strong> {{ selected_cattle.age }} years ({{ lifecycle_data.age_days }} days)</li>
+                        <li class="mb-2"><strong>Weight:</strong> {{ selected_cattle.weight }} kg</li>
+                        <li class="mb-2"><strong>Health Status:</strong> 
+                            <span class="badge {% if selected_cattle.health_status == 'Healthy' %}bg-success{% else %}bg-warning{% endif %}">
+                                {{ selected_cattle.health_status }}
+                            </span>
+                        </li>
+                        <li class="mb-2"><strong>Daily Milk Yield:</strong> {{ selected_cattle.milk_yield_daily|default(0) }} liters</li>
+                        <li class="mb-2"><strong>Current Phase:</strong> {{ detailed_lifecycle_data.current_phase }}</li>
+                        <li><strong>Estimated Productive Years:</strong> {{ lifecycle_data.estimated_productive_years }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lifecycle Stages -->
+        <div class="col-md-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Lifecycle Stages</h5>
+                </div>
+                <div class="card-body">
+                    <div class="lifecycle-timeline mb-4">
+                        {% for stage in lifecycle_data.stages %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker {% if stage.status == 'completed' %}bg-success{% elif stage.status == 'current' %}bg-primary{% else %}bg-light{% endif %}">
+                                {% if stage.status == 'completed' %}<i class="fas fa-check text-white"></i>{% endif %}
+                                {% if stage.status == 'current' %}<i class="fas fa-clock text-white"></i>{% endif %}
+                            </div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">{{ stage.stage }}</h6>
+                                <p class="text-muted small mb-0">Day {{ stage.start }} to {{ stage.end }}</p>
+                                <span class="badge {% if stage.status == 'completed' %}bg-success{% elif stage.status == 'current' %}bg-primary{% else %}bg-light text-dark{% endif %}">
+                                    {{ stage.status|capitalize }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <h5 class="mt-4 mb-3">Key Milestones</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Event</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for milestone in detailed_lifecycle_data.milestones %}
+                                <tr>
+                                    <td>{{ milestone.event }}</td>
+                                    <td>{{ milestone.date }}</td>
+                                    <td>
+                                        <span class="badge {% if milestone.status == 'completed' %}bg-success{% else %}bg-light text-dark{% endif %}">
+                                            {{ milestone.status|capitalize }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Metrics -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Performance Metrics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted mb-2">Lifetime Milk Production</h6>
+                                    <h4 class="mb-0">{{ detailed_lifecycle_data.performance_metrics.lifetime_milk_production|round|int }} L</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted mb-2">Daily Production</h6>
+                                    <h4 class="mb-0">{{ detailed_lifecycle_data.performance_metrics.average_daily_production }} L</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted mb-2">Reproductive Efficiency</h6>
+                                    <h4 class="mb-0">{{ detailed_lifecycle_data.performance_metrics.reproductive_efficiency }}%</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted mb-2">Health Score</h6>
+                                    <h4 class="mb-0">{{ detailed_lifecycle_data.performance_metrics.health_score }}/100</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Future Projections -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Future Projections</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted mb-2">Projected Lifetime Production</h6>
+                                    <h4 class="mb-0">{{ detailed_lifecycle_data.future_projections.projected_lifetime_production|round|int }} L</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted mb-2">Estimated Calves</h6>
+                                    <h4 class="mb-0">{{ detailed_lifecycle_data.future_projections.estimated_calves|round(1) }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted mb-2">Retirement Age</h6>
+                                    <h4 class="mb-0">{{ detailed_lifecycle_data.future_projections.retirement_age }} years</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted mb-2">Economic Value</h6>
+                                    <h4 class="mb-0">₹{{ detailed_lifecycle_data.future_projections.economic_value|round|int }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- No cattle selected message -->
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        Select a cattle from the dropdown above to view its lifecycle information.
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .lifecycle-timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    .lifecycle-timeline::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 0;
+        height: 100%;
+        width: 2px;
+        background-color: #e9ecef;
+    }
+    .timeline-item {
+        position: relative;
+        margin-bottom: 25px;
+    }
+    .timeline-marker {
+        position: absolute;
+        left: -30px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+    }
+    .timeline-content {
+        padding-left: 15px;
+    }
+</style>
+{% endblock %}

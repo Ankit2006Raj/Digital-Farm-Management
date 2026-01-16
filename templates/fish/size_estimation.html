@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Fish Size Estimation{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary">
+                <i class="fas fa-ruler me-2"></i>
+                Fish Size Estimation
+            </h2>
+            <p class="text-muted">Upload pond images for AI-powered size analysis</p>
+        </div>
+        <div>
+            <a href="{{ url_for('fish.index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-camera me-2"></i>Upload Pond Image</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label for="pond_image" class="form-label">Select Pond Image</label>
+                            <input type="file" class="form-control" id="pond_image" name="pond_image" accept="image/*" required>
+                            <div class="form-text">Upload a clear image of your fish pond for best results</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="pond_id" class="form-label">Pond ID (Optional)</label>
+                            <input type="text" class="form-control" id="pond_id" name="pond_id" placeholder="e.g. P001">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="species" class="form-label">Fish Species (Optional)</label>
+                            <select class="form-control" id="species" name="species">
+                                <option value="">Select species (optional)</option>
+                                <option value="rohu">Rohu</option>
+                                <option value="catla">Catla</option>
+                                <option value="mrigal">Mrigal</option>
+                                <option value="common_carp">Common Carp</option>
+                                <option value="tilapia">Tilapia</option>
+                                <option value="pangasius">Pangasius</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="calibration_object" class="form-label">Calibration Object (Optional)</label>
+                            <select class="form-control" id="calibration_object" name="calibration_object">
+                                <option value="none">None</option>
+                                <option value="ruler">Ruler (30cm)</option>
+                                <option value="standard_feed_cup">Standard Feed Cup (10cm diameter)</option>
+                                <option value="water_bottle">Water Bottle (20cm height)</option>
+                            </select>
+                            <div class="form-text">Including a standard-sized object in the image improves measurement accuracy</div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-calculator me-2"></i>Analyze Size
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>About Fish Size Estimation</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5><i class="fas fa-camera-retro text-info me-2"></i>How It Works</h5>
+                        <p>Our AI-powered size estimation tool uses computer vision to:</p>
+                        <ul>
+                            <li>Detect individual fish in pond images</li>
+                            <li>Calculate length and estimated weight</li>
+                            <li>Analyze size distribution across the pond</li>
+                            <li>Determine market readiness percentage</li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5><i class="fas fa-lightbulb text-warning me-2"></i>Tips for Best Results</h5>
+                        <ul>
+                            <li>Take photos in good lighting conditions</li>
+                            <li>Capture images from directly above the pond</li>
+                            <li>Include a calibration object if possible</li>
+                            <li>Ensure water clarity for better visibility</li>
+                            <li>Take multiple images for more accurate averages</li>
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-chart-line me-2"></i>
+                        <strong>Pro Tip:</strong> Regular size monitoring helps optimize feeding and determine the best harvest time.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

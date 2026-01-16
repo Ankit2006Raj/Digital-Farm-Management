@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Cattle Schedule{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-secondary">
+                <i class="fas fa-calendar me-2"></i>
+                Cattle Schedule
+            </h2>
+            <p class="text-muted">Manage and schedule activities for your cattle</p>
+        </div>
+        <div>
+            <a href="{{ url_for('cattle.index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Cattle Management
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Upcoming Events -->
+        <div class="col-md-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Upcoming Events</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Event</th>
+                                    <th>Location</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for event in upcoming_events %}
+                                <tr>
+                                    <td>{{ event.event_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ event.event_time.strftime('%H:%M') if event.event_time else 'All day' }}</td>
+                                    <td>
+                                        <strong>{{ event.title }}</strong>
+                                        {% if event.notes %}
+                                        <br>
+                                        <small class="text-muted">{{ event.notes }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ event.location }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-3">
+                                        <i class="fas fa-calendar-times fa-2x text-muted mb-2"></i>
+                                        <p class="mb-0">No upcoming events scheduled</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add New Event -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Add New Event</h5>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="eventTitle" class="form-label">Event Title</label>
+                            <input type="text" class="form-control" id="eventTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventType" class="form-label">Event Type</label>
+                            <select class="form-select" id="eventType" required>
+                                <option value="" selected disabled>Select type...</option>
+                                <option value="health-check">Health Check</option>
+                                <option value="vaccination">Vaccination</option>
+                                <option value="breeding">Breeding</option>
+                                <option value="milking">Milking</option>
+                                <option value="feeding">Feeding</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventDate" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="eventDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventTime" class="form-label">Time</label>
+                            <input type="time" class="form-control" id="eventTime">
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventCattle" class="form-label">Select Cattle</label>
+                            <select class="form-select" id="eventCattle">
+                                <option value="" selected>All Cattle</option>
+                                {% for cattle in cattle_list %}
+                                <option value="{{ cattle.id }}">{{ cattle.tag_number }} - {{ cattle.breed }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventNotes" class="form-label">Notes</label>
+                            <textarea class="form-control" id="eventNotes" rows="3"></textarea>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i> Add Event
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar View -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Calendar View</h5>
+                </div>
+                <div class="card-body">
+                    <div id="calendar" style="height: 600px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Schedule Recommendations -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">AI Schedule Recommendations</h5>
+                    <button class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-sync-alt me-1"></i> Generate Recommendations
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6 class="alert-heading">Optimize Your Schedule</h6>
+                        <p class="mb-0">Our AI has analyzed your cattle data and recommends the following schedule optimizations:</p>
+                        <ul class="mb-0 mt-2">
+                            <li>Schedule health checks for all cattle on Monday mornings for efficiency</li>
+                            <li>Group vaccinations by age groups to minimize stress on animals</li>
+                            <li>Adjust feeding times based on seasonal temperature changes</li>
+                        </ul>
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button class="btn btn-success">
+                            <i class="fas fa-check me-2"></i> Apply Recommendations
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FullCalendar Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: [
+                {% for event in upcoming_events %}
+                {
+                    title: '{{ event.title }}',
+                    start: '{{ event.event_date.strftime("%Y-%m-%d") }}{% if event.event_time %}T{{ event.event_time.strftime("%H:%M:%S") }}{% endif %}',
+                    allDay: {% if event.event_time %}false{% else %}true{% endif %},
+                    extendedProps: {
+                        location: '{{ event.location }}',
+                        notes: '{{ event.notes }}'
+                    }
+                }{% if not loop.last %},{% endif %}
+                {% endfor %}
+            ],
+            eventClick: function(info) {
+                alert('Event: ' + info.event.title + '\nLocation: ' + info.event.extendedProps.location);
+            }
+        });
+        calendar.render();
+    });
+</script>
+{% endblock %}

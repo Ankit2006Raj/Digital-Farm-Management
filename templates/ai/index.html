@@ -1,0 +1,522 @@
+{% extends "base.html" %}
+
+{% block title %}AI Analytics{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-primary">
+            <i class="fas fa-brain me-2"></i>
+            AI Analytics Hub
+        </h2>
+        <p class="text-muted">Advanced AI-powered insights and predictive analytics for your farm</p>
+    </div>
+    <div>
+        <button class="btn btn-primary me-2" onclick="runFullAnalysis()">
+            <i class="fas fa-play"></i> Run Full Analysis
+        </button>
+        <button class="btn btn-outline-success" onclick="generateReport()">
+            <i class="fas fa-file-alt"></i> Generate Report
+        </button>
+    </div>
+</div>
+
+<!-- AI Overview Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card dashboard-card ai-card">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-line fa-2x text-success mb-3"></i>
+                <h4 class="fw-bold text-success">94.2%</h4>
+                <p class="text-muted mb-0">Prediction Accuracy</p>
+                <div class="progress mt-2">
+                    <div class="progress-bar bg-success" style="width: 94%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card dashboard-card ai-card">
+            <div class="card-body text-center">
+                <i class="fas fa-eye fa-2x text-info mb-3"></i>
+                <h4 class="fw-bold text-info">1,247</h4>
+                <p class="text-muted mb-0">Images Analyzed</p>
+                <small class="text-success">+15% this week</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card dashboard-card ai-card">
+            <div class="card-body text-center">
+                <i class="fas fa-lightbulb fa-2x text-warning mb-3"></i>
+                <h4 class="fw-bold text-warning">23</h4>
+                <p class="text-muted mb-0">AI Recommendations</p>
+                <small class="text-info">3 pending actions</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card dashboard-card ai-card">
+            <div class="card-body text-center">
+                <i class="fas fa-shield-alt fa-2x text-danger mb-3"></i>
+                <h4 class="fw-bold text-danger">2</h4>
+                <p class="text-muted mb-0">Health Alerts</p>
+                <small class="text-danger">Requires attention</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Features Grid -->
+<div class="row mb-4">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 ai-feature-card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-camera me-2"></i>
+                    Computer Vision
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Advanced image analysis for health monitoring and anomaly detection.</p>
+                <div class="feature-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Disease Detection:</span>
+                        <span class="stat-value text-success">96.8% Accuracy</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Anomaly Detection:</span>
+                        <span class="stat-value text-info">89.2% Accuracy</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Size Estimation:</span>
+                        <span class="stat-value text-warning">92.5% Accuracy</span>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-outline-success btn-sm me-2" onclick="testVision()">Test Vision</button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewVisionLogs()">View Logs</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 ai-feature-card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    Predictive Analytics
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Machine learning models for production forecasting and optimization.</p>
+                <div class="feature-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Milk Yield Prediction:</span>
+                        <span class="stat-value text-success">91.3% Accuracy</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Disease Outbreak:</span>
+                        <span class="stat-value text-info">88.7% Accuracy</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Market Readiness:</span>
+                        <span class="stat-value text-warning">94.1% Accuracy</span>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-outline-info btn-sm me-2" onclick="runPrediction()">Run Prediction</button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewModels()">View Models</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 ai-feature-card">
+            <div class="card-header bg-warning text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-microphone me-2"></i>
+                    Voice Assistant
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Multi-language voice commands and smart recommendations.</p>
+                <div class="feature-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Voice Recognition:</span>
+                        <span class="stat-value text-success">95.4% Accuracy</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Languages Supported:</span>
+                        <span class="stat-value text-info">5 Languages</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Commands Processed:</span>
+                        <span class="stat-value text-warning">847 Today</span>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-outline-warning btn-sm me-2" onclick="startVoiceAssistant()">
+                        <i class="fas fa-microphone"></i> Start
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewCommands()">Commands</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Real-time Analytics -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-area me-2"></i>
+                    Real-time AI Performance
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="aiPerformanceChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-robot me-2"></i>
+                    AI Status
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="ai-status-item mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>Computer Vision Engine</span>
+                        <span class="badge bg-success">Active</span>
+                    </div>
+                    <div class="progress progress-sm mt-1">
+                        <div class="progress-bar bg-success" style="width: 95%"></div>
+                    </div>
+                    <small class="text-muted">CPU: 23% | Memory: 45%</small>
+                </div>
+                
+                <div class="ai-status-item mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>Prediction Models</span>
+                        <span class="badge bg-success">Running</span>
+                    </div>
+                    <div class="progress progress-sm mt-1">
+                        <div class="progress-bar bg-success" style="width: 87%"></div>
+                    </div>
+                    <small class="text-muted">Processing: 12 predictions</small>
+                </div>
+                
+                <div class="ai-status-item mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>Voice Assistant</span>
+                        <span class="badge bg-warning">Standby</span>
+                    </div>
+                    <div class="progress progress-sm mt-1">
+                        <div class="progress-bar bg-warning" style="width: 60%"></div>
+                    </div>
+                    <small class="text-muted">Ready for commands</small>
+                </div>
+                
+                <div class="ai-status-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>Data Processing</span>
+                        <span class="badge bg-info">Processing</span>
+                    </div>
+                    <div class="progress progress-sm mt-1">
+                        <div class="progress-bar bg-info" style="width: 76%"></div>
+                    </div>
+                    <small class="text-muted">Queue: 5 images pending</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent AI Insights -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-brain me-2"></i>
+                    Recent AI Insights & Recommendations
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-success"></div>
+                        <div class="timeline-content">
+                            <h6 class="mb-1">High Milk Yield Predicted for C001</h6>
+                            <p class="mb-1">AI analysis suggests 15% increase in milk production next week based on health indicators and nutrition data.</p>
+                            <small class="text-muted">Confidence: 94.2% • 2 hours ago</small>
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                <button class="btn btn-sm btn-outline-success">Apply Recommendation</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-warning"></div>
+                        <div class="timeline-content">
+                            <h6 class="mb-1">Fish Growth Rate Below Optimal</h6>
+                            <p class="mb-1">Computer vision detected 8% slower growth in Pond P001. Recommend adjusting feed composition and water temperature.</p>
+                            <small class="text-muted">Confidence: 89.7% • 4 hours ago</small>
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-outline-primary">View Analysis</button>
+                                <button class="btn btn-sm btn-outline-warning">Schedule Action</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-info"></div>
+                        <div class="timeline-content">
+                            <h6 class="mb-1">Optimal Breeding Time Identified</h6>
+                            <p class="mb-1">Cross-species learning model suggests December 15-20 as optimal breeding window for C003 based on health and environmental factors.</p>
+                            <small class="text-muted">Confidence: 91.8% • 6 hours ago</small>
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-outline-primary">View Genetics</button>
+                                <button class="btn btn-sm btn-outline-info">Schedule Breeding</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.ai-card {
+    border-top: 4px solid;
+    transition: transform 0.3s ease;
+}
+
+.ai-card:hover {
+    transform: translateY(-5px);
+}
+
+.ai-feature-card {
+    transition: all 0.3s ease;
+}
+
+.ai-feature-card:hover {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    transform: translateY(-3px);
+}
+
+.feature-stats {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: between;
+    margin-bottom: 8px;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #6c757d;
+    flex: 1;
+}
+
+.stat-value {
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.ai-status-item {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.progress-sm {
+    height: 4px;
+}
+
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -23px;
+    top: 5px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 3px solid white;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 3px solid #dee2e6;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    createAIPerformanceChart();
+    updateAIStatus();
+});
+
+function createAIPerformanceChart() {
+    const ctx = document.getElementById('aiPerformanceChart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+            datasets: [{
+                label: 'Computer Vision',
+                data: [85, 87, 92, 89, 94, 96],
+                borderColor: '#28a745',
+                backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                tension: 0.4
+            }, {
+                label: 'Predictive Models',
+                data: [78, 82, 85, 88, 91, 89],
+                borderColor: '#17a2b8',
+                backgroundColor: 'rgba(23, 162, 184, 0.1)',
+                tension: 0.4
+            }, {
+                label: 'Voice Processing',
+                data: [92, 94, 91, 95, 97, 95],
+                borderColor: '#ffc107',
+                backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    min: 70,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Accuracy %'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function updateAIStatus() {
+    setInterval(() => {
+        // Simulate real-time updates
+        const progressBars = document.querySelectorAll('.ai-status-item .progress-bar');
+        progressBars.forEach(bar => {
+            const currentWidth = parseInt(bar.style.width);
+            const newWidth = Math.max(60, Math.min(98, currentWidth + Math.random() * 6 - 3));
+            bar.style.width = newWidth + '%';
+        });
+    }, 5000);
+}
+
+function runFullAnalysis() {
+    FarmManagement.showToast('Starting comprehensive AI analysis across all farm modules...', 'info');
+    
+    setTimeout(() => {
+        FarmManagement.showToast('AI Analysis complete! 12 new insights generated.', 'success');
+    }, 3000);
+}
+
+function generateReport() {
+    FarmManagement.showToast('Generating detailed AI analytics report...', 'info');
+    
+    setTimeout(() => {
+        FarmManagement.showToast('Report generated successfully! Check your downloads.', 'success');
+    }, 2000);
+}
+
+function testVision() {
+    FarmManagement.showToast('Running computer vision test on sample images...', 'info');
+    
+    setTimeout(() => {
+        FarmManagement.showToast('Vision test completed. 8/10 images processed successfully.', 'success');
+    }, 1500);
+}
+
+function runPrediction() {
+    FarmManagement.showToast('Executing predictive models for next 7 days...', 'info');
+    
+    setTimeout(() => {
+        FarmManagement.showToast('Predictions complete. 95.2% confidence score achieved.', 'success');
+    }, 2500);
+}
+
+function startVoiceAssistant() {
+    const button = event.target;
+    button.innerHTML = '<i class="fas fa-stop"></i> Stop';
+    button.classList.replace('btn-outline-warning', 'btn-warning');
+    
+    FarmManagement.showToast('Voice Assistant activated. Listening for commands...', 'info');
+    
+    setTimeout(() => {
+        button.innerHTML = '<i class="fas fa-microphone"></i> Start';
+        button.classList.replace('btn-warning', 'btn-outline-warning');
+        FarmManagement.showToast('Voice session ended.', 'secondary');
+    }, 10000);
+}
+
+function viewVisionLogs() {
+    window.location.href = '/ai/vision-logs';
+}
+
+function viewModels() {
+    window.location.href = '/ai/models';
+}
+
+function viewCommands() {
+    window.location.href = '/ai/voice-commands';
+}
+</script>
+{% endblock %}

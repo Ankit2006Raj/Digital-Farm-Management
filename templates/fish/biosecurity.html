@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Fish Biosecurity Analysis{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Fish Farm Biosecurity Analysis</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Biosecurity Risk Assessment</h5>
+                </div>
+                <div class="card-body">
+                    <p class="lead">Overall biosecurity status for your fish farm operations:</p>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Risk Factor</th>
+                                    <th>Status</th>
+                                    <th>Score</th>
+                                    <th>Risk Level</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for factor in risk_factors %}
+                                <tr>
+                                    <td>{{ factor.factor }}</td>
+                                    <td>{{ factor.status }}</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar {% if factor.score >= 90 %}bg-success{% elif factor.score >= 70 %}bg-info{% elif factor.score >= 50 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                                role="progressbar" 
+                                                style="width: {{ factor.score }}%" 
+                                                aria-valuenow="{{ factor.score }}" 
+                                                aria-valuemin="0" 
+                                                aria-valuemax="100">{{ factor.score }}%</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if factor.score >= 90 %}
+                                            <span class="badge bg-success">Low Risk</span>
+                                        {% elif factor.score >= 70 %}
+                                            <span class="badge bg-info">Moderate Risk</span>
+                                        {% elif factor.score >= 50 %}
+                                            <span class="badge bg-warning">High Risk</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Critical Risk</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Recommended Actions</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item">Maintain regular water quality testing</li>
+                        <li class="list-group-item">Implement visitor biosecurity protocols</li>
+                        <li class="list-group-item">Ensure proper quarantine for new fish</li>
+                        <li class="list-group-item">Regularly disinfect equipment</li>
+                        <li class="list-group-item">Monitor fish behavior for early disease detection</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Biosecurity Resources</h5>
+                </div>
+                <div class="card-body">
+                    <p>Access these resources to improve your farm's biosecurity:</p>
+                    <ul class="list-group">
+                        <li class="list-group-item"><a href="#">Biosecurity Best Practices Guide</a></li>
+                        <li class="list-group-item"><a href="#">Disease Prevention Strategies</a></li>
+                        <li class="list-group-item"><a href="#">Water Quality Management</a></li>
+                        <li class="list-group-item"><a href="#">Emergency Response Planning</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

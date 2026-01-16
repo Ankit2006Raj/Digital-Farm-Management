@@ -1,0 +1,491 @@
+{% extends "base.html" %}
+
+{% block title %}Egg Freshness Estimator{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-warning">
+            <i class="fas fa-egg me-2"></i>
+            AI Egg Freshness Estimator
+        </h2>
+        <p class="text-muted">Upload egg photos for AI-powered quality assessment</p>
+    </div>
+    <a href="{{ url_for('poultry.index') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Poultry
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-warning text-white">
+                <h5 class="mb-0">Upload Egg Images for Analysis</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" action="{{ url_for('poultry.egg_freshness') }}">
+                    <div class="upload-area" onclick="document.getElementById('eggImages').click()">
+                        <input type="file" name="eggImages" id="eggImages" multiple accept="image/*" style="display: none;" onchange="handleImageUpload(this)">
+                        <div class="upload-text">
+                            <i class="fas fa-cloud-upload-alt fa-4x text-muted mb-3"></i>
+                            <h4>Upload Egg Photos</h4>
+                            <p class="text-muted">
+                                Take clear photos of cracked eggs showing the yolk and white<br>
+                                Supports: JPG, PNG (Max 5 images)
+                            </p>
+                            <button type="button" class="btn btn-warning">Choose Images</button>
+                        </div>
+                        <div class="preview-container" id="imagePreview" style="display: none;"></div>
+                    </div>
+                
+                <div class="row mt-4" id="analysisOptions" style="display: none;">
+                    <div class="col-md-6">
+                        <label class="form-label">Egg Source (Optional)</label>
+                        <select class="form-control" id="eggSource" name="eggSource">
+                            <option value="">Select Coop</option>
+                            <option value="CP001">CP001 - Rhode Island Red</option>
+                            <option value="CP002">CP002 - Leghorn</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Collection Date</label>
+                        <input type="date" class="form-control" id="collectionDate" name="collectionDate">
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4" id="analyzeButton" style="display: none;">
+                    <button type="submit" class="btn btn-warning btn-lg">
+                        <i class="fas fa-brain"></i> Analyze Egg Freshness
+                    </button>
+                </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Analysis Results -->
+        <div class="card mt-4" id="resultsCard" {% if not analysis_results %}style="display: none;"{% endif %}>
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-check-circle me-2"></i>
+                    AI Analysis Results
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="analysisResults">
+                    {% if analysis_results %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="result-card text-center">
+                                <h5>Overall Grade</h5>
+                                <div class="badge bg-{{ analysis_results.color }} fs-4 px-4 py-2">Grade {{ analysis_results.grade }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="result-card text-center">
+                                <h5>Freshness Score</h5>
+                                <div class="freshness-score text-{{ analysis_results.color }}">{{ analysis_results.freshness_score }}%</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-6 mb-3">
+                            <div class="result-card">
+                                <h6>Egg Analysis</h6>
+                                <div class="row small">
+                                    <div class="col-6">
+                                        <strong>Grade:</strong> {{ analysis_results.grade }}<br>
+                                        <strong>Freshness:</strong> {{ analysis_results.freshness_score }}%<br>
+                                        <strong>Shelf Life:</strong> {{ analysis_results.shelf_life }}
+                                    </div>
+                                    <div class="col-6">
+                                        <strong>Yolk:</strong> {{ analysis_results.yolk_condition }}<br>
+                                        <strong>White:</strong> {{ analysis_results.white_condition }}<br>
+                                        <strong>Value:</strong> {{ analysis_results.market_value }}
+                                    </div>
+                                </div>
+                                {% if analysis_results.defects and analysis_results.defects[0] != 'None detected' %}
+                                <div class="mt-2 small"><strong>Defects:</strong> {{ analysis_results.defects|join(', ') }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if analysis_results.image_path %}
+                        <div class="col-md-6 mb-3">
+                            <div class="result-card">
+                                <h6>Analyzed Image</h6>
+                                <img src="{{ analysis_results.image_path }}" class="img-fluid rounded" alt="Analyzed Egg">
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Egg Quality Guide -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Egg Quality Guide
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="quality-indicator mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="quality-dot bg-success me-2"></div>
+                        <strong>Excellent (Grade AA)</strong>
+                    </div>
+                    <ul class="small text-muted">
+                        <li>Clear, thick white</li>
+                        <li>Firm, round yolk</li>
+                        <li>No defects</li>
+                    </ul>
+                </div>
+                
+                <div class="quality-indicator mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="quality-dot bg-warning me-2"></div>
+                        <strong>Good (Grade A)</strong>
+                    </div>
+                    <ul class="small text-muted">
+                        <li>Reasonably thick white</li>
+                        <li>Slightly flattened yolk</li>
+                        <li>Minor defects allowed</li>
+                    </ul>
+                </div>
+                
+                <div class="quality-indicator">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="quality-dot bg-danger me-2"></div>
+                        <strong>Poor (Grade B)</strong>
+                    </div>
+                    <ul class="small text-muted">
+                        <li>Thin, watery white</li>
+                        <li>Flat, enlarged yolk</li>
+                        <li>Visible defects</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Analyses -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Analyses</h5>
+            </div>
+            <div class="card-body">
+                <div class="analysis-item mb-3">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>CP001 Batch</strong>
+                            <div class="small text-muted">Today, 10:30 AM</div>
+                        </div>
+                        <span class="badge bg-success">Grade AA</span>
+                    </div>
+                </div>
+                
+                <div class="analysis-item mb-3">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>CP002 Batch</strong>
+                            <div class="small text-muted">Yesterday, 3:15 PM</div>
+                        </div>
+                        <span class="badge bg-warning">Grade A</span>
+                    </div>
+                </div>
+                
+                <div class="analysis-item">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>Mixed Batch</strong>
+                            <div class="small text-muted">2 days ago</div>
+                        </div>
+                        <span class="badge bg-success">Grade AA</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.upload-area {
+    border: 3px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 50px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.upload-area:hover,
+.upload-area.dragover {
+    border-color: #ffc107;
+    background: rgba(255, 193, 7, 0.1);
+}
+
+.preview-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.preview-image {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    aspect-ratio: 1;
+}
+
+.preview-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-image .remove-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(220, 53, 69, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.quality-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.analysis-item {
+    padding: 15px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background: #f8f9fa;
+}
+
+.result-card {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    background: white;
+}
+
+.freshness-score {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    margin: 20px 0;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let uploadedImages = [];
+
+function handleImageUpload(input) {
+    const files = Array.from(input.files);
+    if (files.length > 5) {
+        alert('Maximum 5 images allowed');
+        return;
+    }
+    
+    uploadedImages = files;
+    displayImagePreviews(files);
+    
+    if (files.length > 0) {
+        document.getElementById('analysisOptions').style.display = 'block';
+        document.getElementById('analyzeButton').style.display = 'block';
+    }
+}
+
+function displayImagePreviews(files) {
+    const previewContainer = document.getElementById('imagePreview');
+    const uploadText = document.querySelector('.upload-text');
+    
+    previewContainer.innerHTML = '';
+    
+    files.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const previewDiv = document.createElement('div');
+            previewDiv.className = 'preview-image';
+            previewDiv.innerHTML = `
+                <img src="${e.target.result}" alt="Egg ${index + 1}">
+                <button class="remove-btn" onclick="removeImage(${index})">&times;</button>
+            `;
+            previewContainer.appendChild(previewDiv);
+        };
+        reader.readAsDataURL(file);
+    });
+    
+    uploadText.style.display = 'none';
+    previewContainer.style.display = 'grid';
+}
+
+function removeImage(index) {
+    uploadedImages.splice(index, 1);
+    
+    if (uploadedImages.length === 0) {
+        document.querySelector('.upload-text').style.display = 'block';
+        document.getElementById('imagePreview').style.display = 'none';
+        document.getElementById('analysisOptions').style.display = 'none';
+        document.getElementById('analyzeButton').style.display = 'none';
+    } else {
+        displayImagePreviews(uploadedImages);
+    }
+}
+
+// This function is no longer needed as we're using server-side processing
+// The form submission will handle the analysis now
+
+function simulateEggAnalysis() {
+    // Simulate AI analysis results
+    const grades = ['AA', 'A', 'B'];
+    const colors = ['success', 'warning', 'danger'];
+    const freshnessScores = [92, 78, 65];
+    
+    const randomGrade = Math.floor(Math.random() * grades.length);
+    const grade = grades[randomGrade];
+    const color = colors[randomGrade];
+    const freshnessScore = freshnessScores[randomGrade] + Math.floor(Math.random() * 8) - 4;
+    
+    const analyses = uploadedImages.map((_, index) => ({
+        imageNumber: index + 1,
+        grade: grade,
+        freshnessScore: Math.max(50, Math.min(100, freshnessScore + Math.floor(Math.random() * 10) - 5)),
+        yolkCondition: randomGrade === 0 ? 'Firm and round' : randomGrade === 1 ? 'Slightly flattened' : 'Flat and enlarged',
+        whiteCondition: randomGrade === 0 ? 'Thick and clear' : randomGrade === 1 ? 'Reasonably thick' : 'Thin and watery',
+        defects: randomGrade === 2 ? ['Blood spots', 'Shell cracks'] : randomGrade === 1 ? ['Minor discoloration'] : ['None detected'],
+        shelfLife: randomGrade === 0 ? '3-4 weeks' : randomGrade === 1 ? '2-3 weeks' : '1-2 weeks',
+        marketValue: randomGrade === 0 ? 'Premium' : randomGrade === 1 ? 'Standard' : 'Lower grade'
+    }));
+    
+    return {
+        overallGrade: grade,
+        overallColor: color,
+        averageFreshness: Math.round(analyses.reduce((sum, a) => sum + a.freshnessScore, 0) / analyses.length),
+        individualAnalyses: analyses,
+        recommendations: generateRecommendations(grade)
+    };
+}
+
+function displayAnalysisResults(results) {
+    const resultsContainer = document.getElementById('analysisResults');
+    
+    resultsContainer.innerHTML = `
+        <div class="row">
+            <div class="col-md-6">
+                <div class="result-card text-center">
+                    <h5>Overall Grade</h5>
+                    <div class="badge bg-${results.overallColor} fs-4 px-4 py-2">Grade ${results.overallGrade}</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="result-card text-center">
+                    <h5>Freshness Score</h5>
+                    <div class="freshness-score text-${results.overallColor}">${results.averageFreshness}%</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-3">
+            ${results.individualAnalyses.map(analysis => `
+                <div class="col-md-6 mb-3">
+                    <div class="result-card">
+                        <h6>Image ${analysis.imageNumber} Analysis</h6>
+                        <div class="row small">
+                            <div class="col-6">
+                                <strong>Grade:</strong> ${analysis.grade}<br>
+                                <strong>Freshness:</strong> ${analysis.freshnessScore}%<br>
+                                <strong>Shelf Life:</strong> ${analysis.shelfLife}
+                            </div>
+                            <div class="col-6">
+                                <strong>Yolk:</strong> ${analysis.yolkCondition}<br>
+                                <strong>White:</strong> ${analysis.whiteCondition}<br>
+                                <strong>Value:</strong> ${analysis.marketValue}
+                            </div>
+                        </div>
+                        ${analysis.defects.length > 0 && analysis.defects[0] !== 'None detected' ? 
+                            `<div class="mt-2 small"><strong>Defects:</strong> ${analysis.defects.join(', ')}</div>` : ''}
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+        
+        <div class="mt-4">
+            <h5>AI Recommendations</h5>
+            <div class="alert alert-info">
+                <ul class="mb-0">
+                    ${results.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                </ul>
+            </div>
+        </div>
+    `;
+}
+
+function generateRecommendations(grade) {
+    const recommendations = {
+        'AA': [
+            'Excellent quality eggs - ideal for premium market sales',
+            'Store in refrigerator at 4°C to maintain quality',
+            'These eggs can be marketed as "Premium Grade" with higher pricing',
+            'Continue current feeding and housing practices'
+        ],
+        'A': [
+            'Good quality eggs suitable for standard market',
+            'Consider improving ventilation in poultry housing',
+            'Check feed quality and freshness',
+            'Monitor for stress factors that might affect egg quality'
+        ],
+        'B': [
+            'Lower grade eggs - consider for processing or local sales',
+            'Review feeding schedule and nutrition content',
+            'Check poultry housing conditions and cleanliness',
+            'Consider health check for laying birds'
+        ]
+    };
+    
+    return recommendations[grade] || recommendations['A'];
+}
+
+// Drag and drop functionality
+document.querySelector('.upload-area').addEventListener('dragover', function(e) {
+    e.preventDefault();
+    this.classList.add('dragover');
+});
+
+document.querySelector('.upload-area').addEventListener('dragleave', function() {
+    this.classList.remove('dragover');
+});
+
+document.querySelector('.upload-area').addEventListener('drop', function(e) {
+    e.preventDefault();
+    this.classList.remove('dragover');
+    
+    const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+    if (files.length > 0) {
+        document.getElementById('eggImages').files = e.dataTransfer.files;
+        handleImageUpload(document.getElementById('eggImages'));
+    }
+});
+</script>
+{% endblock %}

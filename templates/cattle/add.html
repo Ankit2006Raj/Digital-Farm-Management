@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Cattle{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-plus me-2"></i>
+                    Add New Cattle
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="tag_number" class="form-label">Tag Number *</label>
+                            <input type="text" class="form-control" id="tag_number" name="tag_number" required>
+                            <div class="form-text">Unique identifier for the animal</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="breed" class="form-label">Breed *</label>
+                            <select class="form-control" id="breed" name="breed" required>
+                                <option value="">Select Breed</option>
+                                <option value="Holstein">Holstein</option>
+                                <option value="Jersey">Jersey</option>
+                                <option value="Gir">Gir</option>
+                                <option value="Sahiwal">Sahiwal</option>
+                                <option value="Red Sindhi">Red Sindhi</option>
+                                <option value="Tharparkar">Tharparkar</option>
+                                <option value="Crossbred">Crossbred</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="age" class="form-label">Age (years) *</label>
+                            <input type="number" class="form-control" id="age" name="age" min="0" max="20" step="0.1" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="weight" class="form-label">Weight (kg) *</label>
+                            <input type="number" class="form-control" id="weight" name="weight" min="50" max="1000" step="0.1" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="health_status" class="form-label">Health Status</label>
+                            <select class="form-control" id="health_status" name="health_status">
+                                <option value="Healthy">Healthy</option>
+                                <option value="Sick">Sick</option>
+                                <option value="Under Treatment">Under Treatment</option>
+                                <option value="Monitoring Required">Monitoring Required</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="milk_yield_daily" class="form-label">Daily Milk Yield (L)</label>
+                            <input type="number" class="form-control" id="milk_yield_daily" name="milk_yield_daily" min="0" max="50" step="0.1">
+                            <div class="form-text">Leave empty for non-milking animals</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Additional Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Any additional information about the animal..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('cattle.index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to List
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Add Cattle
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Form validation and enhancement
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const ageInput = document.getElementById('age');
+    const milkYieldInput = document.getElementById('milk_yield_daily');
+    
+    // Auto-disable milk yield for young animals
+    ageInput.addEventListener('input', function() {
+        const age = parseFloat(this.value);
+        if (age < 1.5) {
+            milkYieldInput.value = '';
+            milkYieldInput.disabled = true;
+            milkYieldInput.parentElement.style.opacity = '0.5';
+        } else {
+            milkYieldInput.disabled = false;
+            milkYieldInput.parentElement.style.opacity = '1';
+        }
+    });
+    
+    // Form validation
+    form.addEventListener('submit', function(e) {
+        const tagNumber = document.getElementById('tag_number').value;
+        const breed = document.getElementById('breed').value;
+        const age = parseFloat(document.getElementById('age').value);
+        const weight = parseFloat(document.getElementById('weight').value);
+        
+        if (!tagNumber || !breed || !age || !weight) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+            return;
+        }
+        
+        // Validate age-weight relationship
+        if (age < 1 && weight > 100) {
+            if (!confirm('The weight seems high for this age. Are you sure you want to continue?')) {
+                e.preventDefault();
+                return;
+            }
+        }
+        
+        if (age > 10 && weight < 300) {
+            if (!confirm('The weight seems low for this age. Are you sure you want to continue?')) {
+                e.preventDefault();
+                return;
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

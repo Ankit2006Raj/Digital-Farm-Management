@@ -1,0 +1,358 @@
+{% extends "base.html" %}
+
+{% block title %}Farm Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        padding: 2rem 0;
+        margin: -20px -20px 30px -20px;
+        border-radius: 0 0 15px 15px;
+    }
+    
+    .dashboard-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .dashboard-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="dashboard-title">Farm Dashboard</h1>
+                <p class="dashboard-subtitle mb-0">Overview of your farm operations</p>
+            </div>
+            <div>
+                <button class="btn btn-light btn-lg" onclick="scheduleAICheck()">
+                    <i class="bi bi-calendar-plus me-2"></i>
+                    Schedule AI Check
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Overview Metrics -->
+<div class="row mb-4">
+    <!-- Total Revenue -->
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card dashboard-card revenue-card h-100">
+            <div class="card-body text-center">
+                <div class="card-icon mx-auto">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <div class="metric-label">Total Revenue</div>
+                <div class="metric-value">₹{{ "{:,.0f}".format(total_revenue) }}</div>
+                <div class="metric-change positive">
+                    <i class="fas fa-arrow-up me-1"></i>+12.5% from last month
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Animals -->
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card dashboard-card animals-card h-100">
+            <div class="card-body text-center">
+                <div class="card-icon mx-auto">
+                    <i class="fas fa-paw"></i>
+                </div>
+                <div class="metric-label">Active Animals</div>
+                <div class="metric-value">{{ active_animals }}</div>
+                <div class="metric-change positive">
+                    <i class="fas fa-arrow-up me-1"></i>+3.2% from last month
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Health Score -->
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card dashboard-card health-card h-100">
+            <div class="card-body text-center">
+                <div class="card-icon mx-auto">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="metric-label">Health Score</div>
+                <div class="metric-value">{{ "%.1f"|format(health_score) }}%</div>
+                <div class="metric-change negative">
+                    <i class="fas fa-arrow-down me-1"></i>-1.1% from last month
+                </div>
+                <div class="progress-container">
+                    <div class="progress">
+                        <div class="progress-bar bg-info" style="width: {{ health_score }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Productivity -->
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card dashboard-card productivity-card h-100">
+            <div class="card-body text-center">
+                <div class="card-icon mx-auto">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="metric-label">Productivity</div>
+                <div class="metric-value">{{ productivity_score }}%</div>
+                <div class="metric-change positive">
+                    <i class="fas fa-arrow-up me-1"></i>+5.7% from last month
+                </div>
+                <div class="progress-container">
+                    <div class="progress">
+                        <div class="progress-bar bg-success" style="width: {{ productivity_score }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Farm Modules Status -->
+<div class="row">
+    <div class="col-12">
+        <div class="module-status">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="mb-1">Farm Modules Status</h4>
+                    <p class="text-muted mb-0">Health and activity overview</p>
+                </div>
+            </div>
+
+            <!-- Cattle Management -->
+            <div class="module-item">
+                <div class="module-icon">
+                    <i class="fas fa-cow"></i>
+                </div>
+                <div class="module-info">
+                    <h6>Cattle Management</h6>
+                    <p>{{ total_cattle }} animals</p>
+                </div>
+                <div class="module-status-bar">
+                    <div class="status-percentage">96%</div>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" style="width: 96%"></div>
+                    </div>
+                </div>
+                <span class="alert-badge">2 alerts</span>
+            </div>
+
+            <!-- Fish Farm -->
+            <div class="module-item">
+                <div class="module-icon">
+                    <i class="fas fa-fish"></i>
+                </div>
+                <div class="module-info">
+                    <h6>Fish Farm</h6>
+                    <p>{{ total_fish_ponds }} pond{% if total_fish_ponds != 1 %}s{% endif %}</p>
+                </div>
+                <div class="module-status-bar">
+                    <div class="status-percentage">92%</div>
+                    <div class="progress">
+                        <div class="progress-bar bg-info" style="width: 92%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Poultry Farm -->
+            <div class="module-item">
+                <div class="module-icon">
+                    <i class="fas fa-feather"></i>
+                </div>
+                <div class="module-info">
+                    <h6>Poultry Farm</h6>
+                    <p>{{ total_poultry_coops }} coop{% if total_poultry_coops != 1 %}s{% endif %}</p>
+                </div>
+                <div class="module-status-bar">
+                    <div class="status-percentage">88%</div>
+                    <div class="progress">
+                        <div class="progress-bar bg-warning" style="width: 88%"></div>
+                    </div>
+                </div>
+                <span class="alert-badge">1 alert</span>
+            </div>
+
+            <!-- AI Analytics -->
+            <div class="module-item">
+                <div class="module-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="module-info">
+                    <h6>AI Analytics</h6>
+                    <p>Real-time monitoring</p>
+                </div>
+                <div class="module-status-bar">
+                    <div class="status-percentage">94%</div>
+                    <div class="progress">
+                        <div class="progress-bar bg-primary" style="width: 94%"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-plus-circle text-success fa-3x mb-3"></i>
+                <h5>Add New Animal</h5>
+                <p class="text-muted">Register a new animal to your farm</p>
+                <div class="btn-group w-100" role="group">
+                    <a href="/cattle/add" class="btn btn-outline-success">Cattle</a>
+                    <a href="/fish/add" class="btn btn-outline-info">Fish</a>
+                    <a href="/poultry/add" class="btn btn-outline-warning">Poultry</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-stethoscope text-danger fa-3x mb-3"></i>
+                <h5>Health Check</h5>
+                <p class="text-muted">AI-powered disease detection</p>
+                <a href="/ai/health-check" class="btn btn-danger w-100">Start Health Check</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-bar text-primary fa-3x mb-3"></i>
+                <h5>View Reports</h5>
+                <p class="text-muted">Detailed analytics and insights</p>
+                <a href="/ai/reports" class="btn btn-primary w-100">View Reports</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Activity</h5>
+                    <a href="/ai/activity-log" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-success"></div>
+                        <div class="timeline-content">
+                            <h6 class="mb-1">Cattle C001 health check completed</h6>
+                            <p class="text-muted mb-0">AI analysis detected no health issues</p>
+                            <small class="text-muted">2 hours ago</small>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-warning"></div>
+                        <div class="timeline-content">
+                            <h6 class="mb-1">Fish pond P001 requires attention</h6>
+                            <p class="text-muted mb-0">Water temperature slightly elevated</p>
+                            <small class="text-muted">4 hours ago</small>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-info"></div>
+                        <div class="timeline-content">
+                            <h6 class="mb-1">Poultry coop CP001 egg production updated</h6>
+                            <p class="text-muted mb-0">Daily yield: 180 eggs</p>
+                            <small class="text-muted">6 hours ago</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -23px;
+    top: 5px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 3px solid white;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid #dee2e6;
+}
+</style>
+
+<script>
+// Initialize dashboard when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Add animation to cards
+    const cards = document.querySelectorAll('.dashboard-card');
+    cards.forEach((card, index) => {
+        setTimeout(() => {
+            card.classList.add('fade-in');
+        }, index * 200);
+    });
+
+    // Initialize charts if elements exist
+    setTimeout(() => {
+        if (document.getElementById('revenueChart')) {
+            FarmManagement.createRevenueChart({});
+        }
+        if (document.getElementById('productivityChart')) {
+            FarmManagement.createProductivityChart({});
+        }
+    }, 1000);
+});
+
+function scheduleAICheck() {
+    window.location.href = '/ai/schedule-check';
+}
+</script>
+{% endblock %}

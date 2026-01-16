@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Schedule Check{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">AI Schedule Check</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-12 col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Schedule Analysis</h6>
+                </div>
+                <div class="card-body">
+                    <p>The AI schedule check analyzes your farm's calendar and activities to optimize scheduling and resource allocation.</p>
+                    
+                    <div class="alert alert-info">
+                        <h5>Schedule Optimization Recommendations</h5>
+                        <ul>
+                            <li>Consider rescheduling cattle vaccination to morning hours for better efficiency</li>
+                            <li>Maintenance activities should be grouped on Tuesdays and Thursdays</li>
+                            <li>Feed deliveries can be optimized by scheduling them bi-weekly instead of weekly</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">Schedule Efficiency Score</div>
+                                <div class="card-body text-center">
+                                    <h1>78%</h1>
+                                    <p>Your current schedule efficiency</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">Potential Improvement</div>
+                                <div class="card-body text-center">
+                                    <h1>92%</h1>
+                                    <p>Potential efficiency with AI recommendations</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button class="btn btn-primary">Generate New Schedule Recommendations</button>
+                        <button class="btn btn-success ml-2">Apply AI Recommendations</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
