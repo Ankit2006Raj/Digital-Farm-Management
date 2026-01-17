@@ -277,7 +277,6 @@ Contributions are welcome! Here's how you can help:
 
 ### Development Guidelines
 - Follow PEP 8 style guide for Python code
-- Write clear commit messages
 - Add comments for complex logic
 - Test your changes thoroughly
 - Update documentation as needed
