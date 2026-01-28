@@ -53,7 +53,6 @@ A comprehensive AI-powered farm management platform built with Flask that helps 
 - Production forecasting
 - Anomaly detection in livestock behavior
 - Data-driven insights and recommendations
-- Activity log tracking
 
 ### 🗓️ Smart Calendar
 - Schedule farm activities and tasks
