@@ -1,6 +1,6 @@
 # 🌾 Smart Farm Management System
 
-A comprehensive AI-powered farm management platform built with Flask that helps farmers manage cattle, fish, poultry, and overall farm operations efficiently. This system integrates AI analytics, health monitoring, marketplace features, and intelligent scheduling to modernize farm management.
+A comprehensive AI-powered farm management platform built with Flask that helps farmers manage cattle, fish, poultry, and overall farm operations efficiently. This system integrates AI analytics, health monitoring, marketplace features, and intelligent scheduling to modernize farms management.
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-2.3.3-green.svg)
