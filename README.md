@@ -31,7 +31,6 @@ A comprehensive AI-powered farm management platform built with Flask that helps 
 - Monitor breed, age, weight, and health status
 - Health check and anomaly detection using AI
 - Nutrition recommendations based on cattle data
-- Lifecycle tracking dashboard
 - Vaccination and treatment scheduling
 
 ### 🐟 Fish Farming
