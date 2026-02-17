@@ -13,7 +13,7 @@ A comprehensive AI-powered farm management platform built with Flask that helps 
 
 ## 📋 Table of Contents
 
-- [Features](#-features)
+- [Features](#-feature)
 - [Tech Stack](#-tech-stack)
 - [Installation](#-installation)
 - [Usage](#-usage)
